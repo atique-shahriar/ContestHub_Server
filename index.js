@@ -27,6 +27,26 @@ async function run() {
     const database = client.db("contestHub");
     const userCollection = database.collection("users");
 
+
+    app.get("/users", async (req, res) => {
+        const cursor = userCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+      });
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const email = user.email;
+      const query = {email: email};
+      const find = await userCollection.findOne(query);
+      console.log("Find", find);
+      if (!find) {
+        const result = await userCollection.insertOne(user);
+        res.send(result);
+      }
+    });
+
     app.get("/", async (req, res) => {
       res.send("Hello World!");
     });
