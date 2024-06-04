@@ -68,10 +68,42 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/usersActivity/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const {activity} = req.body;
+      const updatedDoc = {
+        $set: {
+          activity: activity,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     //Contest
     app.get("/contests", async (req, res) => {
       const cursor = contestCollection.find().sort({participants: -1});
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.delete("/contests/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await contestCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put("/contests/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set: {
+          confirmation: "confirmed",
+        },
+      };
+      const result = await contestCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
 
