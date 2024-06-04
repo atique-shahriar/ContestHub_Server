@@ -1,7 +1,7 @@
 const express = require("express");
 var cors = require("cors");
 require("dotenv").config();
-const {MongoClient, ServerApiVersion} = require("mongodb");
+const {MongoClient, ServerApiVersion, ObjectId} = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -26,13 +26,14 @@ async function run() {
 
     const database = client.db("contestHub");
     const userCollection = database.collection("users");
+    const contestCollection = database.collection("contests");
 
-
+    //User Collection
     app.get("/users", async (req, res) => {
-        const cursor = userCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
-      });
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     app.post("/users", async (req, res) => {
       const user = req.body;
@@ -45,6 +46,33 @@ async function run() {
         const result = await userCollection.insertOne(user);
         res.send(result);
       }
+    });
+
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.put("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const {role} = req.body;
+      const updatedDoc = {
+        $set: {
+          role: role,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    //Contest
+    app.get("/contests", async (req, res) => {
+      const cursor = contestCollection.find().sort({participants: -1});
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     app.get("/", async (req, res) => {
