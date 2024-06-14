@@ -88,6 +88,12 @@ async function run() {
       res.send(result);
     });
 
+    app.post("/contests", async (req, res) => {
+      const contest = req.body;
+      const result = await contestCollection.insertOne(contest);
+      res.send(result);
+    });
+
     app.delete("/contests/:id", async (req, res) => {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
@@ -100,7 +106,20 @@ async function run() {
       const filter = {_id: new ObjectId(id)};
       const updatedDoc = {
         $set: {
-          confirmation: "confirmed",
+          confirmation: true,
+        },
+      };
+      const result = await contestCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    app.put("/contestsComment/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const {comment} = req.body;
+      const updatedDoc = {
+        $set: {
+          comment: comment,
         },
       };
       const result = await contestCollection.updateOne(filter, updatedDoc);
