@@ -28,6 +28,7 @@ async function run() {
     const database = client.db("contestHub");
     const userCollection = database.collection("users");
     const contestCollection = database.collection("contests");
+    const paymentCollection = database.collection("payments");
 
     //User Collection
     app.get("/users", async (req, res) => {
@@ -114,6 +115,18 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/contestsParticipants/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set: {
+          contestParticipants: req.body.participants + 1,
+        },
+      };
+      const result = await contestCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     app.put("/contestsComment/:id", async (req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
@@ -121,6 +134,18 @@ async function run() {
       const updatedDoc = {
         $set: {
           comment: comment,
+        },
+      };
+      const result = await contestCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    app.put("/contestsRegistered/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $addToSet: {
+          contestRegistered: req.body.contestRegistered,
         },
       };
       const result = await contestCollection.updateOne(filter, updatedDoc);
@@ -144,6 +169,11 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+    app.post("/payments", async (req, res) => {
+      const payment = req.body;
+      const result = await paymentCollection.insertOne(payment);
+      res.send(result);
     });
 
     await client.db("admin").command({ping: 1});
