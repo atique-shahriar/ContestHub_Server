@@ -71,6 +71,23 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/usersUpdate/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const {updatedInfo} = req.body;
+      console.log(updatedInfo);
+
+      const updatedDoc = {
+        $set: {
+          name: updatedInfo.name,
+          photoUrl: updatedInfo.photoUrl,
+          address: updatedInfo.address,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     app.put("/usersActivity/:id", async (req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
@@ -193,6 +210,12 @@ async function run() {
         },
       };
       const result = await paymentCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    app.get("/winners", async (req, res) => {
+      const cursor = winnerCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
