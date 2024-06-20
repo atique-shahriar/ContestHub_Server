@@ -29,6 +29,7 @@ async function run() {
     const userCollection = database.collection("users");
     const contestCollection = database.collection("contests");
     const paymentCollection = database.collection("payments");
+    const winnerCollection = database.collection("winners");
 
     //User Collection
     app.get("/users", async (req, res) => {
@@ -170,9 +171,34 @@ async function run() {
         clientSecret: paymentIntent.client_secret,
       });
     });
+
     app.post("/payments", async (req, res) => {
       const payment = req.body;
       const result = await paymentCollection.insertOne(payment);
+      res.send(result);
+    });
+
+    app.get("/payments", async (req, res) => {
+      const cursor = paymentCollection.find().sort({date: -1});
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.put("/paymentWinners/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set: {
+          contestWinner: "Winner",
+        },
+      };
+      const result = await paymentCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    app.post("/winners", async (req, res) => {
+      const winner = req.body;
+      const result = await winnerCollection.insertOne(winner);
       res.send(result);
     });
 
