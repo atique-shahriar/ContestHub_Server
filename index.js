@@ -3,11 +3,16 @@ var cors = require("cors");
 require("dotenv").config();
 const stripe = require("stripe")(process.env.PAYMENT_KEY);
 const {MongoClient, ServerApiVersion, ObjectId} = require("mongodb");
+
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://contesthub-fa697.web.app", "https://contesthub-fa697.firebaseapp.com"],
+  })
+);
 app.use(express.json());
-app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vbl1j76.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -158,6 +163,19 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/contestsDate/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const {date} = req.body;
+      const updatedDoc = {
+        $set: {
+          contestDeadline: date,
+        },
+      };
+      const result = await contestCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
     app.put("/contestsRegistered/:id", async (req, res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
@@ -213,6 +231,19 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/paymentDateUpdate/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = {contestId: id};
+      const {date} = req.body;
+      const updatedDoc = {
+        $set: {
+          contestDate: date,
+        },
+      };
+      const result = await paymentCollection.updateMany(filter, updatedDoc);
+      res.send(result);
+    });
+
     app.get("/winners", async (req, res) => {
       const cursor = winnerCollection.find();
       const result = await cursor.toArray();
@@ -225,8 +256,8 @@ async function run() {
       res.send(result);
     });
 
-    await client.db("admin").command({ping: 1});
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ping: 1});
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
