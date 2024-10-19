@@ -59,7 +59,6 @@
 
 <br>
 <h2>Credentials:</h2>
-<div>
  <h5>Admin username: admin@gmail.com</h5>
 <h5>Password: Admin123</h5>
-</div>
+
