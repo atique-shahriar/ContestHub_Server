@@ -55,10 +55,7 @@
 <img src="https://github.com/atiqueshahriarr/Contest-Hub-Client/blob/main/Contest-Hub-Creator-2.png?raw=true"
         alt="project-screenshot" width="100%" height="100%">
 </div>
-
-
 <br>
-<h2>Credentials:</h2>
- <h5>Admin username: admin@gmail.com</h5>
-<h5>Password: Admin123</h5>
+
+<h4>Credentials: </h4> <h5>Admin username: admin@gmail.com</h5> <h5>Password: Admin123</h5>
 
